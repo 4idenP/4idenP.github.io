@@ -1,12 +1,23 @@
 # main links
 main:
-  - title: "Quick-Start Guide"
-    url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
-  # - title: "About"
-  #   url: https://mmistakes.github.io/minimal-mistakes/about/
-  # - title: "Sample Posts"
-  #   url: /year-archive/
-  # - title: "Sample Collections"
-  #   url: /collection-archive/
-  # - title: "Sitemap"
-  #   url: /sitemap/
+  - title: "CTFs"
+    url: "/ctfs"
+  - title: "Categories"
+    url: "/categories"
+  - title: "Tags"
+    url: "/tags"
+
+# posts sidebar
+docs:
+  - title: "Categories"
+    children:
+      - title: "Web"
+        url: "/categories#web"
+      - title: "Rev"
+        url: "/categories#rev"
+  - title: "CTFs"
+    children:
+      - title: "N1CTF 2025"
+        url: "/ctfs#n1ctf25"
+      - title: "Hack.lu 2025"
+        url: "/ctfs#hack.lu25"

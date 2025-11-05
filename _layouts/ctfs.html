@@ -1,0 +1,44 @@
+---
+layout: archive
+---
+
+{{ content }}
+
+{% assign ctfs_list = "" | split: "" %}
+{% for post in site.posts %}
+  {% if post.ctfs %}
+    {% for ctf in post.ctfs %}
+      {% assign ctfs_list = ctfs_list | push: ctf %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+{% assign ctfs_list = ctfs_list | uniq | sort_natural %}
+
+<ul class="taxonomy__index">
+  {% for ctf in ctfs_list %}
+    {% assign posts_in_ctf = site.posts | where_exp: "post", "post.ctfs contains ctf" %}
+    <li>
+      <a href="#{{ ctf | slugify }}">
+        <strong>{{ ctf }}</strong>
+        <span class="taxonomy__count">{{ posts_in_ctf | size }}</span>
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+
+{% assign entries_layout = page.entries_layout | default: 'list' %}
+
+{% for ctf in ctfs_list %}
+  {% assign posts_in_ctf = site.posts | where_exp: "post", "post.ctfs contains ctf" %}
+  <section id="{{ ctf | slugify }}" class="taxonomy__section">
+    <h2 class="archive__subtitle">{{ ctf }}</h2>
+    <div class="entries-{{ entries_layout }}">
+      {% for post in posts_in_ctf %}
+        {% include archive-single.html type=entries_layout %}
+      {% endfor %}
+    </div>
+    <!--<a href="#page-title" class="back-to-top">
+      {{ site.data.ui-text[site.locale].back_to_top | default: 'Back to Top' }} &uarr;
+    </a>-->
+  </section>
+{% endfor %}
