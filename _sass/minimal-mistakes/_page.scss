@@ -80,7 +80,7 @@ body {
 
 .page__lead {
   font-family: $global-font-family;
-  font-size: $type-size-4;
+  font-size: $type-size-5;
 }
 
 .page__content {
@@ -215,7 +215,7 @@ body {
     }
 
     .page__lead {
-      max-width: $medium;
+      max-width: 100%;
     }
 
     .page__title {
