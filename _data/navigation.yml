@@ -17,6 +17,8 @@ docs:
         url: "/categories#rev"
       - title: "Crypto"
         url: "/categories#crypto"
+      - title: "Forensics"
+        url: "/categories#forensics"
   - title: "CTFs"
     children:
       - title: "N1CTF 2025"
@@ -25,3 +27,5 @@ docs:
         url: "/ctfs#hack.lu25"
       - title: "FCSC"
         url: "/ctfs#fcsc"
+      - title: "PlatyPwn 2025"
+        url: "/ctfs#platypwn25"

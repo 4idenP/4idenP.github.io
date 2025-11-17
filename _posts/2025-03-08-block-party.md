@@ -211,4 +211,4 @@ sock.close()
 
 Using this exploit, the server sends us the flag back :
 
-> *...*
+> CTFAC{...}
