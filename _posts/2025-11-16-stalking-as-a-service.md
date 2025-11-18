@@ -62,6 +62,7 @@ with open("output.apk", "wb") as f:
 By using *JADX*, we decompile the embedded *APK* and find a dynamic dex loader in it : 
 
 ```java
+// p000a.Context
 public static void load(android.content.Context context) {
         try {
             String[] list = context.getAssets().list("");
@@ -138,6 +139,7 @@ public static void load(android.content.Context context) {
 This dynamic loader looks into the `assets/` folder of the application for files with a name longer than 14 characters, it creates a file with the same name and the *zip* extension in the `dex/` folder of the application, and finally it writes the output of the `C0007h.m10a` function in it, whose code is the following : 
 
 ```java
+// p000a.C0007h
 public static void m10a(InputStream inputStream, File file, String str) {
         try {
             SecretKeySpec secretKeySpec = new SecretKeySpec(m11a(str), "AES");
