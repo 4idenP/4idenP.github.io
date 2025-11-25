@@ -64,6 +64,8 @@ img.save("obj8.png")
 
 By previewing the image, we notice it looks like a huuuuuge barcode, at least to big for classical barcode readers. Let's write our own, guessing the encoding is **Code128**, as there are no control characters at the beginning/end : 
 
+> https://fr.wikipedia.org/wiki/Code_128
+
 ```python
 from PIL import Image
 import numpy as np
@@ -645,8 +647,75 @@ pn_do:
 done:
         halt
 ```
-By analyzing it, ....
 
-We retrieve the flag : 
+By analyzing it, the pseudo-assembly extracted from the Code128 image implements a minimal virtual machine, structured into three stages:
+- A pre-computation phase (`precs_i`)
+- A fake conditional path (`union_work`)
+- The real block-based verification (`checkin / blk_check`)
+
+### Pre-computation and derivation of `chk`
+
+The pre-computation iterates over a constant table `c5d` (65 bytes) and accumulates the sum of all bytes in the table, an arithmetic progression based on `paX = 23`, and then reduces the result mod 256 :
+
+```
+b00ts = 47
+sumct = ( Σ c5d[i]  +  Σ_{i=0..64} (23 * i) ) mod 256
+chk   = sumct XOR b00ts
+```
+
+Then : 
+
+```
+if chk < 0:
+    jump union_work
+else:
+    jump checkin
+```
+
+Since `chk` is an unsigned byte, it can never be negative : `union_work` is a decoy path. The real execution flow always continues into `checkin`.
+
+### Block-based verification
+
+The verification logic uses three buffers :
+
+```
+IN    : user input (65 bytes)
+CAND  : intermediate buffer (65 bytes)
+BLKSZ : 12
+```
+
+The program splits IN into 12-byte blocks :
+
+```
+IN[0..11], IN[12..23], IN[24..35], ...
+```
+
+For each block, the block is linearly mixed into the corresponding portion of `CAND` and the transformed block is compared to a reference block inside `c5d`.
+
+In pseudo-code : 
+
+```
+for block in blocks(IN, 12):
+    mix = transform(block)
+    if mix != c5d[block_index]:
+        reject
+accept
+```
+
+Thus, the transformation is fully reversible, to recover the correct input we just have to invert `transform()` on each constant block.
+
+### Flag reconstruction
+
+Inverting the transformation for each block yields :
+
+```
+flag = concat(
+    inverse_transform(c5d[0..11]),
+    inverse_transform(c5d[12..23]),
+    ...
+)
+```
+
+This way, we can rebuild the exact input used for this challenge, i.e. the flag :
 
 > flag{br3_unsTuUc7-d4_c3LInG_f4N_y33t--br00_1nStRuCT10N5_n0W_Cl3R}
