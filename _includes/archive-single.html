@@ -17,6 +17,7 @@
         <img src="{{ teaser | relative_url }}" alt="">
       </div>
     {% endif %}
+    <div style="display:flex;flex-direction:row;align-items:flex-end;gap:10px">
     <h2 class="archive__item-title no_toc" itemprop="headline">
       {% if post.link %}
         <a href="{{ post.link }}">{{ title }}</a> <a href="{{ post.url | relative_url }}" rel="permalink"><i class="fas fa-link" aria-hidden="true" title="permalink"></i><span class="sr-only">Permalink</span></a>
@@ -24,6 +25,12 @@
         <a href="{{ post.url | relative_url }}" rel="permalink">{{ title }}</a>
       {% endif %}
     </h2>
+    {% if post.categories %}
+      {% for category in post.categories %}
+        <p class="archive__item-categories">{{ category }}</p>{% unless forloop.last %}, {% endunless %}
+      {% endfor %}
+      </div>
+    {% endif %}
     {% include page__meta.html type=include.type %}
     {% if post.excerpt %}<p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify | strip_html | truncate: 160 }}</p>{% endif %}
   </article>
