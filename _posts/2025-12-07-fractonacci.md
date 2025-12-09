@@ -17,7 +17,16 @@ header:
 
 We have an image representing a Newton fractal, with mostly red pixels. By looking in the red RGB channel, at the beginning of the image, we can notice artifacts that seem to follow an exponential progression regarding their coordinates.
 
-Therefore, we guess we have to extract the red channel of specific pixels whose coordinates follow the *Fibonacci suite* : 
+Therefore, we have to extract the red channel of specific pixels whose coordinates follow the *Fibonacci suite*. The suite follows this structure : 
+
+```python
+def fibonacci(n: int) -> int:
+    if n <= 1:
+        return 1
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+```
+In our case, we want to browse the suite's values one by one until we go further than a given limit (the number of pixels). Thus, we create the values iteratively and add them to a list, until the value goes beyond the number of pixels of the image :
 
 ```python
 from PIL import Image
@@ -50,6 +59,8 @@ while coord < img.width * img.height:
 
 print(''.join(chr(c) for c in extracted))
 ```
+
+We execute the script to retrieve the data :
 
 ```
 ~# python script.py
