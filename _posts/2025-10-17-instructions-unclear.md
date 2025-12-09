@@ -64,7 +64,7 @@ img.save("obj8.png")
 
 By previewing the image, we notice it looks like a huuuuuge barcode, at least to big for classical barcode readers. Let's write our own, guessing the encoding is **Code128**, as there are no control characters at the beginning/end : 
 
-> https://fr.wikipedia.org/wiki/Code_128
+> [https://fr.wikipedia.org/wiki/Code_128](https://fr.wikipedia.org/wiki/Code_128)
 
 ```python
 from PIL import Image
@@ -184,7 +184,7 @@ print(result)
 ```
 
 **Code128** works by encoding a character with 6 elements (3 spaces + 3 bars), then the width of the bars/spaces defines which character is being encoded
-> https://en.wikipedia.org/wiki/Code_128
+> [https://en.wikipedia.org/wiki/Code_128](https://fr.wikipedia.org/wiki/Code_128)
 
 Knowing this and adjusting a few errors in the encoding manually, we get this pseudo-assembly code : 
 

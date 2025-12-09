@@ -29,3 +29,5 @@ docs:
         url: "/ctfs#fcsc"
       - title: "PlatyPwn 2025"
         url: "/ctfs#platypwn25"
+      - title: "BackdoorCTF 2025"
+        url: "/ctfs#backdoorctf25"

@@ -54,7 +54,7 @@ Bob: Is this really necessary?
 
 - So the challenge here seems to be able to retrieve the key in the second embedde file, `Conversation`, which is the HTML page of the "Conversation" Wikipedia page :
 
-> https://en.wikipedia.org/wiki/Conversation
+> [https://en.wikipedia.org/wiki/Conversation](https://en.wikipedia.org/wiki/Conversation)
 
 ```
 ~# zstd -d Conversation -o Conversation.html
@@ -71,7 +71,7 @@ Frames  Skips  Compressed  Uncompressed  Ratio  Check  Filename
 
 We can see the "Skips" column is set to 1. Looking at the **RFC** for *zstd*, we learn there exists "skippable frames" : `Skippable frames allow the insertion of user-defined metadata into a flow of concatenated frames.`. So that's it, some metadata has been embedded into the compressed data and is thus missing after decompression.
 
-> https://www.rfc-editor.org/rfc/rfc8878.html#name-skippable-frames
+> [https://www.rfc-editor.org/rfc/rfc8878.html#name-skippable-frames](https://www.rfc-editor.org/rfc/rfc8878.html#name-skippable-frames)
 
 Still according to the **RFC**, skippable frames are identifyable by the following magic bytes : `0x184D2A5x` (with `0 <= x <= F`). 
 
