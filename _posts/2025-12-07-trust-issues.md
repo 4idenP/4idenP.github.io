@@ -33,99 +33,10 @@ header:
 └── tmp
 ```
 
-We have an application that allows us to register (*/register*), login (*/login*) and finally access an admin panel (*/store*) if we have the correct permissions : 
-
 ```javascript
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const yaml = require('js-yaml');
-
-const TMP_DIR = path.join(__dirname, 'tmp');
-const SYSTEM_CONFIG_PATH = path.join(TMP_DIR, 'config.yml'); // system YAML file
-
-const { DOMParser, XMLSerializer } = require('@xmldom/xmldom');
-const xpath = require('xpath');
-
-const app = express();
-const port = process.env.port || 8000;
-
-try {
-  if (!fs.existsSync(TMP_DIR)) {
-    fs.mkdirSync(TMP_DIR, { recursive: true });
-  }
-} catch (e) {
-  console.error('Could not ensure /tmp exists:', e);
-}
-
-const MAX_FILE_AGE_MS =  3*60 * 1000; // 3 min
-
-function cleanupTmp() {
-  try {
-    const now = Date.now();
-    const files = fs.readdirSync(TMP_DIR);
-
-    for (const f of files) {
-      if (f.startsWith('.')) continue;
-
-      // keep the system config forever
-      if (f === 'config.yml') continue;
-
-      const full = path.join(TMP_DIR, f);
-      const stat = fs.statSync(full);
-      const age = now - stat.mtimeMs;
-
-      if (age > MAX_FILE_AGE_MS) {
-        console.log('[CLEANUP] Removing old tmp file:', f);
-        fs.unlinkSync(full);
-      }
-    }
-  } catch (e) {
-    console.error('[CLEANUP] Error while cleaning tmp:', e);
-  }
-}
-
-// run every 2 minutes
-setInterval(cleanupTmp,2*60 * 1000);
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
-
-
-app.use(express.static(path.join(__dirname, 'public')));
-
+// [...]
 
 const dbPath = path.join(__dirname, 'data.xml');
-
-let xmlDoc;
-try {
-  const xmlContent = fs.readFileSync(dbPath, 'utf8');
-  xmlDoc = new DOMParser().parseFromString(xmlContent);
-  console.log('[SYSTEM] XML database loaded.');
-} catch (err) {
-  console.error('Failed to load data.xml:', err);
-  process.exit(1);
-}
-
-
-function saveXml() {
-  const serializer = new XMLSerializer();
-  const xmlString = serializer.serializeToString(xmlDoc);
-  fs.writeFileSync(dbPath, xmlString, 'utf8');
-}
-
-const sessions = {};
-
-function requireLogin(req, res, next) {
-  const sid = req.cookies.sid;
-  if (!sid || !sessions[sid]) {
-    return res.redirect('/login.html');
-  }
-  req.user = sessions[sid];
-  next();
-}
 
 function requireAdmin(req, res, next) {
   const sid = req.cookies.sid;
@@ -227,33 +138,8 @@ app.post('/login', async (req, res) => {
   res.redirect('/index');
 });
 
-
-app.get('/index', requireLogin, (req, res) => {
-  res.sendFile(path.join(__dirname, 'protected', 'index.html'));
-});
-
-
 app.get('/store', requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'protected', 'store.html'));
-});
-
-
-app.get('/logout', (req, res) => {
-  const sid = req.cookies.sid;
-  if (sid) {
-    delete sessions[sid];
-  }
-  res.clearCookie('sid');
-  res.redirect('/login.html');
-});
-
-
-app.get('/me', (req, res) => {
-  const sid = req.cookies.sid;
-  if (sid && sessions[sid]) {
-    return res.json({ loggedIn: true, user: sessions[sid] });
-  }
-  res.json({ loggedIn: false });
 });
 
 app.post('/admin/create', requireAdmin, (req, res) => {
@@ -303,24 +189,14 @@ app.post('/admin/create', requireAdmin, (req, res) => {
   }
 });
 
-
-app.get('/admin/files', requireAdmin, (req, res) => {
-  try {
-    const files = fs.readdirSync(TMP_DIR)
-      .filter(f => !f.startsWith('.'));
-
-    return res.json({ files });
-  } catch (err) {
-    console.error('Error listing /tmp files:', err);
-    return res.status(500).send('Failed to list files');
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+// [...]
 
 ```
+
+The application uses an *XML* file as a user database and exposes the following routes :
+- */register* : register a new user (using `xpath`).
+- */login* : login (using `xpath`).
+- */store* : display previously saved `yaml` notes and allow to upload new ones through the `POST /admin/create` route.
 
 The flag being located in the `/flag.txt` file, we suppose we have to look for any gadget allowing us to access a file. This can be done using the `/admin/create` route that reads the uploaded file for it to be displayed back in the client tab. Therefore, the pipeline becomes clear : 
 
